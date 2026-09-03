@@ -1,4 +1,6 @@
 export * from './domain/stock-service.js';
+export * from './domain/stock-movement.js';
+export * from './domain/warehouse-topology.js';
 export * from './domain/stock-aggregate.js';
 
 export const WmsModule = {
