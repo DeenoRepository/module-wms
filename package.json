@@ -1,0 +1,17 @@
+﻿{
+  "name": "@platform/module-wms",
+  "version": "1.0.0",
+  "description": "Warehouse Management System (WMS) module with FIFO stock calculation",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@platform/contracts": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  }
+}

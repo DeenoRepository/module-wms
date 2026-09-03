@@ -1,0 +1,12 @@
+﻿{
+  "$schema": "https://ems-platform.local/schemas/module-manifest.v1.json",
+  "id": "module-wms",
+  "name": "Warehouse Management System",
+  "version": "1.0.0",
+  "database": { "schema": "wms" },
+  "permissions": ["wms:stock:read", "wms:stock:write", "wms:transfer:execute"],
+  "events": {
+    "publishes": ["wms.stock.reserved", "wms.stock.issued", "wms.stock.depleted"],
+    "subscribes": ["prm.order.received", "mro.spare_parts.requested"]
+  }
+}
