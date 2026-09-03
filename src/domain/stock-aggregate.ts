@@ -18,9 +18,12 @@ export interface WmsOutboxRecord {
 }
 
 export class StockAggregate {
+  private _props: StockItemProps;
   private _outbox: WmsOutboxRecord[] = [];
 
-  constructor(private props: StockItemProps) {}
+  constructor(props: StockItemProps) {
+    this._props = { ...props };
+  }
 
   static create(props: Omit<StockItemProps, 'quantityReserved'>): StockAggregate {
     const aggregate = new StockAggregate({
@@ -38,7 +41,7 @@ export class StockAggregate {
   }
 
   get props(): Readonly<StockItemProps> {
-    return Object.freeze({ ...this.props });
+    return Object.freeze({ ...this._props });
   }
 
   get outboxEvents(): readonly WmsOutboxRecord[] {
@@ -46,7 +49,7 @@ export class StockAggregate {
   }
 
   get availableQuantity(): number {
-    return this.props.quantityOnHand - this.props.quantityReserved;
+    return this._props.quantityOnHand - this._props.quantityReserved;
   }
 
   reserve(amount: number, workOrderId: string): void {
@@ -55,10 +58,10 @@ export class StockAggregate {
       throw new Error(`Insufficient available stock to reserve ${amount}. Available: ${this.availableQuantity}`);
     }
 
-    this.props.quantityReserved += amount;
+    this._props.quantityReserved += amount;
     this.recordOutbox('wms.stock.reserved', {
-      itemId: this.props.id,
-      sku: this.props.sku,
+      itemId: this._props.id,
+      sku: this._props.sku,
       amount,
       workOrderId
     });
@@ -66,26 +69,26 @@ export class StockAggregate {
 
   issue(amount: number, recipient: string): void {
     if (amount <= 0) throw new Error('Issue amount must be positive');
-    if (this.props.quantityReserved < amount) {
+    if (this._props.quantityReserved < amount) {
       throw new Error('Cannot issue more than currently reserved stock');
     }
 
-    this.props.quantityOnHand -= amount;
-    this.props.quantityReserved -= amount;
+    this._props.quantityOnHand -= amount;
+    this._props.quantityReserved -= amount;
 
     this.recordOutbox('wms.stock.issued', {
-      itemId: this.props.id,
-      sku: this.props.sku,
+      itemId: this._props.id,
+      sku: this._props.sku,
       amount,
       recipient,
-      remainingOnHand: this.props.quantityOnHand
+      remainingOnHand: this._props.quantityOnHand
     });
 
-    if (this.props.quantityOnHand === 0) {
+    if (this._props.quantityOnHand === 0) {
       this.recordOutbox('wms.stock.depleted', {
-        itemId: this.props.id,
-        sku: this.props.sku,
-        warehouseId: this.props.warehouseId
+        itemId: this._props.id,
+        sku: this._props.sku,
+        warehouseId: this._props.warehouseId
       });
     }
   }
@@ -94,7 +97,7 @@ export class StockAggregate {
     this._outbox.push({
       id: crypto.randomUUID(),
       aggregateType: 'StockItem',
-      aggregateId: this.props.id,
+      aggregateId: this._props.id,
       eventType,
       payload,
       createdAt: new Date().toISOString(),
