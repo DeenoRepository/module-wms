@@ -1,4 +1,5 @@
-﻿export * from './domain/stock-service.js';
+export * from './domain/stock-service.js';
+export * from './domain/stock-aggregate.js';
 
 export const WmsModule = {
   id: 'module-wms',
@@ -6,7 +7,7 @@ export const WmsModule = {
   async onInit(ctx: any) {
     ctx.registerNavigation({
       id: 'wms-menu',
-      title: 'РЎРєР»Р°РґСЃРєРѕР№ СѓС‡РµС‚',
+      title: 'Warehouse Management',
       path: '/wms',
       permission: 'wms:stock:read'
     });
